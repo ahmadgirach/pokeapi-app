@@ -4,11 +4,37 @@ import type { PokemonRecordFromAPI } from "../lib/types";
 
 type CurrentTab = "abilities" | "moves" | "stats";
 
+type CommonRecord = {
+  name: string;
+};
+
+type CommonRecords = {
+  data: CommonRecord[];
+};
+
+const ShowRecord = ({ name }: { name: string }) => {
+  return (
+    <span className="text-sm rounded-full px-4 py-2 bg-gray-200 transition-colors hover:bg-gray-300">
+      {name}
+    </span>
+  );
+};
+
+const ShowRecords = ({ data }: CommonRecords) => {
+  return (
+    <>
+      {data.map((record, index) => (
+        <ShowRecord name={record.name} key={index} />
+      ))}
+    </>
+  );
+};
+
 function PokemonDetailsPage() {
   const { pokemonId } = useParams();
 
   const [pokemon, setPokemon] = useState<PokemonRecordFromAPI>();
-  const [curentTab, setCurrentTab] = useState<CurrentTab>("abilities");
+  const [currentTab, setCurrentTab] = useState<CurrentTab>("abilities");
 
   const fetchPokemonById = async () => {
     const result = await fetch(
@@ -23,31 +49,31 @@ function PokemonDetailsPage() {
   }, []);
 
   return (
-    <section className="container">
+    <section className="p-10">
       <h2 className="font-semibold text-xl text-center my-5">
         {pokemon?.name}
       </h2>
-      <div className="flex items-center gap-10">
+      <div className="flex items-baseline gap-10">
         <div>
           <div
-            className={`border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 transition-colors cursor-pointer ${
-              curentTab === "abilities" ? "bg-gray-200" : ""
+            className={`border border-gray-300 bg-gray-100 px-3 py-2 hover:bg-gray-200 transition-colors cursor-pointer ${
+              currentTab === "abilities" ? "bg-gray-200" : ""
             }`}
             onClick={() => setCurrentTab("abilities")}
           >
             <h2>Abilities</h2>
           </div>
           <div
-            className={`border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 transition-colors cursor-pointer ${
-              curentTab === "stats" ? "bg-gray-200" : ""
+            className={`border border-gray-300 bg-gray-100 px-3 py-2 hover:bg-gray-200 transition-colors cursor-pointer ${
+              currentTab === "stats" ? "bg-gray-200" : ""
             }`}
             onClick={() => setCurrentTab("stats")}
           >
             <h2>Stats</h2>
           </div>
           <div
-            className={`border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 transition-colors cursor-pointer ${
-              curentTab === "moves" ? "bg-gray-200" : ""
+            className={`border border-gray-300 bg-gray-100 px-3 py-2 hover:bg-gray-200 transition-colors cursor-pointer ${
+              currentTab === "moves" ? "bg-gray-200" : ""
             }`}
             onClick={() => setCurrentTab("moves")}
           >
@@ -55,50 +81,15 @@ function PokemonDetailsPage() {
           </div>
         </div>
 
-        <div className="w-full p-3 rounded-md bg-gray-100">
-          {curentTab === "abilities" && (
-            <>
-              <div className="flex flex-wrap items-center gap-2">
-                {pokemon?.abilities.map((ability, index) => (
-                  <span
-                    key={index}
-                    className="text-sm rounded-md px-2 py-1 bg-gray-50"
-                  >
-                    {ability?.name}
-                  </span>
-                ))}
-              </div>
-            </>
+        <div className="flex flex-wrap gap-2">
+          {currentTab === "abilities" && (
+            <ShowRecords data={pokemon?.abilities ?? []} />
           )}
-
-          {curentTab === "moves" && (
-            <>
-              <div className="flex flex-wrap items-center gap-2">
-                {pokemon?.moves.map((move, index) => (
-                  <span
-                    key={index}
-                    className="text-sm rounded-md px-2 py-1 bg-gray-50"
-                  >
-                    {move?.name}
-                  </span>
-                ))}
-              </div>
-            </>
+          {currentTab === "moves" && (
+            <ShowRecords data={pokemon?.moves ?? []} />
           )}
-
-          {curentTab === "stats" && (
-            <>
-              <div className="flex flex-wrap items-center gap-2">
-                {pokemon?.stats.map((stat, index) => (
-                  <span
-                    key={index}
-                    className="text-sm rounded-md px-2 py-1 bg-gray-50"
-                  >
-                    {stat?.name}
-                  </span>
-                ))}
-              </div>
-            </>
+          {currentTab === "stats" && (
+            <ShowRecords data={pokemon?.stats ?? []} />
           )}
         </div>
       </div>
