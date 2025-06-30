@@ -2,3 +2,4 @@ django
 django-cors-headers
 djangorestframework
 python-dotenv
+psycopg2-binary
